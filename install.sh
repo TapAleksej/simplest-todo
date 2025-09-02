@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-source .env
+MYSQL_ROOT_PASSWORD="SuperSecret123"
+TODO_DB_NAME="tododb"
+TODO_DB_USER="todouser"
+TODO_DB_PASSWORD="TodoPassword1234"
+TODO_TABLE_NAME="tasks"
+
+TODO_APP_DIR="/var/www/todo"
+DOMAIN_NAME="localhost"
+REPO="https://github.com/AnastasiyaGapochkina01/simplest-todo.git"
 
 log() {
     echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1"

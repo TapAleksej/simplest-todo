@@ -83,7 +83,7 @@ Alias /phpmyadmin /usr/share/phpmyadmin
   </IfModule>
 </Directory>
 EOF
-a2enconf phpmyadmin 2>&1 > /dev/null
+a2ensite phpmyadmin 2>&1 > /dev/null
 check_error "Не удалось создать конфигурацию для phpmyadmin"
 
 log "Создание БД для todo-app"

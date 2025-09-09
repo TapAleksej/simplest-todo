@@ -6,9 +6,9 @@ TODO_DB_USER="todouser"
 TODO_DB_PASSWORD="TodoPassword1234"
 TODO_TABLE_NAME="tasks"
 
-TODO_APP_DIR="/var/www/todo"
+TODO_APP_DIR="/var/www/todo2"
 DOMAIN_NAME="localhost"
-REPO="https://github.com/AnastasiyaGapochkina01/simplest-todo.git"
+REPO="https://github.com/saikatbsk/TODO.git"
 
 log() {
     echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
@@ -115,9 +115,11 @@ log "Запуск todo-app"
 log "Клонирование проекта"
 git clone $REPO $TODO_APP_DIR
 check_error "Не удалось склонировать репозиторий"
+cd $TODO_APP_DIR
+sed -i 's/\($con = mysqli_connect("localhost", \)"saikat", "ppioneer", "todo_db"\();\)/\1"todouser", "TodoPassword1234", "tododb"\2/' dbconnect.php
 
 log "Создание vhost для приложения"
-cat > /etc/apache2/sites-available/todo.conf <<EOF
+cat > /etc/apache2/sites-available/todo2.conf <<EOF
 <VirtualHost *:80>
   ServerName $DOMAIN_NAME
   DocumentRoot $TODO_APP_DIR
@@ -128,10 +130,10 @@ cat > /etc/apache2/sites-available/todo.conf <<EOF
     Require all granted
   </Directory>
 
-  ErrorLog /var/log/apache2/todo_error.log
+  ErrorLog /var/log/apache2/todo2_error.log
 </VirtualHost>
 EOF
-a2ensite todo 2>&1 > /dev/null
+a2ensite todo2 2>&1 > /dev/null
 a2dissite 000-default.conf 2>&1 > /dev/null
 check_error "Не удалось создать vhost"
 

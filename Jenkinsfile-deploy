@@ -27,26 +27,20 @@ pipeline {
 		}			
 		
 		stage('deploy') {
-			steps {
-				script {
-					sh """
-					def drop_docker = { ->
-						docker ps | grep "${FULL_IMG_NAME}" | xargs docker rm -f 
-						echo "Container ${FULL_IMG_NAME} deleted"
-					"""
-					}
+			steps {				
 					def deploy = { ->						
 						withCredentials([usernamePassword(credentialsId: 'docker-token', usernameVariable: 'username', passwordVariable: 'password')]) {
 								sshCommand remote: remote, command:  """																			
 									set -x;
+									docker ps | grep "${FULL_IMG_NAME}" | xargs docker rm -f 
+									echo "Container ${FULL_IMG_NAME} deleted"
 									docker login -u ${username} -p ${password}
 									docker pull "${FULL_IMG_NAME}"
 									//cd "${env.PRJ_DIR}"
 									docker run -it -d --name test-"${BUILD_NUMBER}" "${FULL_IMG_NAME}"									
 								"""								
 						}	
-					}
-					drop_docker()
+					}				
 					deploy()	
 				}
 			}

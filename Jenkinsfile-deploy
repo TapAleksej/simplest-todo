@@ -2,11 +2,7 @@ def remote = [:]
 
 pipeline {	
 	agent any	
-	environment {
-		PRJ_NAME="simplest-todo"
-		FULL_IMG_NAME="alrexcom/${env.PRJ_NAME}:v17"
-		IMG_NAME="${env.PRJ_NAME}"
-		WORKSPACEPATH="${WORKSPACE}/${env.PRJ_NAME}"
+	environment {	
 		GIT_URL="git@github.com:TapAleksej/simplest-todo.git"
 		SERVER_HOST = "10.129.0.19"
 		SERVER_NAME = "deb12"

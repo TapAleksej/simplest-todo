@@ -1,0 +1,57 @@
+def remote = [:]
+
+pipeline {	
+	agent any	
+	environment {
+		PRJ_NAME="simplest-todo"
+		FULL_IMG_NAME="alrexcom/${env.PRJ_NAME}:v17"
+		IMG_NAME="${env.PRJ_NAME}"
+		WORKSPACEPATH="${WORKSPACE}/${env.PRJ_NAME}"
+		GIT_URL="git@github.com:TapAleksej/simplest-todo.git"
+		SERVER_HOST = "10.129.0.19"
+		SERVER_NAME = "deb12"
+	}
+	parameters {
+		booleanParam(name: 'RUN_TEST', defaultValue: true, description: 'Run test?' )
+		booleanParam(name: 'BUILD_IMAGE', defaultValue: true, description: 'Build image?' )
+		string(name: 'IMAGE_TAG', defaultValue: 'latest')	
+		booleanParam(name: 'PUSH_IMG', defaultValue: true, description: 'push image to docker hub?' )		
+	}
+	stages {	
+
+			// вытаскиваем креды
+		stage('Prepare Credentials'){
+		  steps {
+			withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
+			  script {
+				remote.name = "${env.SERVER_NAME}"
+				remote.host = "${env.SERVER_HOST}"
+				remote.user = "${username}"
+				remote.identity = readFile "${private_key}"
+				remote.allowAnyHosts = true
+			  }
+			}
+		  }
+		}			
+		
+		stage('deploy') {
+			steps {
+				script {
+					def deploy = { ->						
+						withCredentials([usernamePassword(credentialsId: 'docker-token', usernameVariable: 'username', passwordVariable: 'password')]) {
+								sshCommand remote: remote, command:  """																			
+									set -x;
+									docker login -u ${username} -p ${password}
+									docker pull "${FULL_IMG_NAME}"
+									cd "${env.PRJ_DIR}"
+									docker run -it -d --name test-"${BUILD_NUMBER}" "${FULL_IMG_NAME}"									
+								"""								
+						}	
+					}	
+					deploy()	
+				}
+			}
+		}	
+		
+	}		
+}						

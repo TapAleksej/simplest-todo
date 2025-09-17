@@ -12,14 +12,10 @@ pipeline {
 		SERVER_NAME = "deb12"
 	}
 	parameters {
-		booleanParam(name: 'RUN_TEST', defaultValue: true, description: 'Run test?' )
-		booleanParam(name: 'BUILD_IMAGE', defaultValue: true, description: 'Build image?' )
-		string(name: 'IMAGE_TAG', defaultValue: 'latest')	
-		booleanParam(name: 'PUSH_IMG', defaultValue: true, description: 'push image to docker hub?' )		
+		string(name: 'FULL_IMG_NAME', description: 'Image to deploy')	
 	}
-	stages {	
-
-			// вытаскиваем креды
+	stages {
+			
 		stage('Prepare Credentials'){
 		  steps {
 			withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
@@ -43,7 +39,7 @@ pipeline {
 									set -x;
 									docker login -u ${username} -p ${password}
 									docker pull "${FULL_IMG_NAME}"
-									cd "${env.PRJ_DIR}"
+									//cd "${env.PRJ_DIR}"
 									docker run -it -d --name test-"${BUILD_NUMBER}" "${FULL_IMG_NAME}"									
 								"""								
 						}	

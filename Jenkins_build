@@ -1,3 +1,5 @@
+Jenkins_build
+
 pipeline {	
 	agent any	
 	environment {
@@ -14,7 +16,8 @@ pipeline {
 		string(name: 'IMAGE_TAG', defaultValue: 'latest')	
 		booleanParam(name: 'PUSH_IMG', defaultValue: true, description: 'push image to docker hub?' )		
 	}
-	stages {			
+	stages {
+	
 		stage('initialize') {
 			steps {
 				echo "Start testing ToDo app; Build #${BUILD_NUMBER}"
@@ -98,6 +101,16 @@ pipeline {
 						"""
 					}
 				}				
-		}		
+		}
+		
+		stage('Call Deploy Job') {	
+		  steps {
+			script {
+			  build quietPeriod: 5, wait: false, job: 'hw29-deploy', 
+			  parameters: [string(name: 'FULL_IMG_NAME', value: "${FULL_IMG_NAME}:${param.IMAGE_TAG}")]
+			}
+		  }
+		}
+		
 	}		
 }						

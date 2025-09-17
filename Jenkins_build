@@ -1,5 +1,3 @@
-Jenkins_build
-
 pipeline {	
 	agent any	
 	environment {
@@ -106,11 +104,9 @@ pipeline {
 		stage('Call Deploy Job') {	
 		  steps {
 			script {
-			  build quietPeriod: 5, wait: false, job: 'hw29-deploy', 
-			  parameters: [string(name: 'FULL_IMG_NAME', value: "${FULL_IMG_NAME}:${param.IMAGE_TAG}")]
+			  build quietPeriod: 5, wait: false, job: 'hw29-deploy', parameters: [string(name: 'FULL_IMG_NAME', value: "${FULL_IMG_NAME}:${param.IMAGE_TAG}")]			  
 			}
 		  }
-		}
-		
+		}		
 	}		
 }						
